@@ -1,0 +1,28 @@
+<h2>Список рецептов</h2>
+<button (click)="onCreate()">Добавить рецепт</button>
+
+<div *ngIf="recipes.length > 0; else noRecipes">
+  <div *ngFor="let recipe of recipes" style="display: flex; align-items: center; margin: 10px 0;">
+    <img *ngIf="recipe.imageUrl"
+         [src]="recipe.imageUrl"
+         width="60"
+         height="45"
+         style="object-fit: cover; border-radius: 4px; margin-right: 10px;" />
+
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span><strong>{{ recipe.title }}</strong> — {{ recipe.createdAt | date:'shortDate' }}</span>
+      <button (click)="onEdit(recipe.id)">✏️</button>
+      <button (click)="confirmDelete(recipe.id)">🗑️</button>
+    </div>
+  </div>
+</div>
+
+<ng-template #noRecipes>
+  <p>Рецептов пока нет.</p>
+</ng-template>
+
+<app-confirm-dialog
+  *ngIf="showConfirm"
+  [message]="'Вы действительно хотите удалить рецепт?'"
+  (confirm)="handleConfirm($event)">
+</app-confirm-dialog>

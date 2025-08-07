@@ -1,0 +1,83 @@
+<h2>{{ isEditMode ? 'Редактировать рецепт' : 'Создать рецепт' }}</h2>
+
+<form #form="ngForm" (ngSubmit)="save()">
+  <label>
+    Название:
+    <input
+      type="text"
+      [(ngModel)]="recipe.title"
+      name="title"
+      required
+      #title="ngModel"
+    />
+  </label>
+
+  <!-- Сообщение, если поле пустое -->
+  <div *ngIf="title.invalid && title.touched" style="color: red;">
+    Название обязательно
+  </div>
+
+  <label>
+    Описание:
+    <textarea [(ngModel)]="recipe.description" name="description"></textarea>
+  </label>
+
+  <div style="margin: 10px 0;">
+    <label>
+      Картинка:
+      <button type="button" (click)="fileInput.click()">Выбрать файл</button>
+      <input
+        #fileInput
+        type="file"
+        accept="image/*"
+        (change)="onImageSelected($event)"
+        style="display: none;"
+      />
+    </label>
+
+    <div style="margin-top: 10px;">
+      <img
+        *ngIf="recipe.imageUrl; else noImage"
+        [src]="recipe.imageUrl"
+        alt="Превью рецепта"
+        width="200"
+      />
+      <ng-template #noImage>
+        <div
+          style="width: 200px; height: 150px; background: #eee; display: flex; align-items: center; justify-content: center;"
+        >
+          <span style="color: #888;">Нет изображения</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <h3>Ингредиенты</h3>
+  <button type="button" (click)="addIngredient()">Добавить ингредиент</button>
+
+  <div *ngFor="let ing of recipe.ingredients; let i = index">
+    <input
+      type="text"
+      [(ngModel)]="ing.name"
+      name="name{{ i }}"
+      placeholder="Название"
+    />
+    <input
+      type="number"
+      [(ngModel)]="ing.amount"
+      name="amount{{ i }}"
+      placeholder="Количество"
+    />
+
+    <select [(ngModel)]="ing.unit" name="unit{{ i }}">
+      <option [ngValue]="null" disabled selected>Выбери единицу</option>
+      <option *ngFor="let unit of units" [ngValue]="unit">
+        {{ unit.name }}
+      </option>
+    </select>
+
+    <button type="button" (click)="removeIngredient(i)">Удалить</button>
+  </div>
+
+  <button type="submit" [disabled]="form.invalid">Сохранить</button>
+</form>
